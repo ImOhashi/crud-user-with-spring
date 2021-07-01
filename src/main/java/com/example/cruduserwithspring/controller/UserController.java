@@ -31,4 +31,16 @@ public class UserController {
         this.logger.debug("Add a new user");
         return new ResponseEntity<>(this.user.addUser(user), HttpStatus.OK);
     }
+
+    @PutMapping(value = "/")
+    public ResponseEntity<User> updateUser(@RequestBody User newUser) {
+        this.logger.debug("Update a user");
+        return new ResponseEntity<>(this.user.updateUser(newUser), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/")
+    public ResponseEntity deleteUser(@RequestBody User user) {
+        this.user.delete(user);
+        return new ResponseEntity(HttpStatus.ACCEPTED);
+    }
 }
