@@ -1,5 +1,6 @@
 package com.example.cruduserwithspring.controller;
 
+import com.example.cruduserwithspring.controller.dto.UserDto;
 import com.example.cruduserwithspring.model.User;
 import com.example.cruduserwithspring.service.UserService;
 import org.slf4j.Logger;
@@ -8,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Collection;
 
 @RestController
@@ -27,20 +30,30 @@ public class UserController {
     }
 
     @PostMapping(value = "/")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    public ResponseEntity<UserDto> addUser(@RequestBody User user, UriComponentsBuilder uriComponentsBuilder) {
         this.logger.debug("Add a new user");
-        return new ResponseEntity<>(this.user.addUser(user), HttpStatus.OK);
+
+        this.user.addUser(user);
+
+        URI uri = uriComponentsBuilder.path("/user/").buildAndExpand(user.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new UserDto(user));
     }
 
     @PutMapping(value = "/")
-    public ResponseEntity<User> updateUser(@RequestBody User newUser) {
+    public ResponseEntity<UserDto> updateUser(@RequestBody User newUser, UriComponentsBuilder uriComponentsBuilder) {
         this.logger.debug("Update a user");
-        return new ResponseEntity<>(this.user.updateUser(newUser), HttpStatus.OK);
+
+        this.user.updateUser(newUser);
+
+        URI uri = uriComponentsBuilder.path("/user/").buildAndExpand(newUser.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new UserDto(newUser));
     }
 
     @DeleteMapping(value = "/")
     public ResponseEntity deleteUser(@RequestBody User user) {
         this.user.delete(user);
-        return new ResponseEntity(HttpStatus.ACCEPTED);
+        return ResponseEntity.noContent().build();
     }
 }
